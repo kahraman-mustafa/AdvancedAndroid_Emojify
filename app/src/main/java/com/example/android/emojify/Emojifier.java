@@ -30,6 +30,13 @@ class Emojifier {
 
     private static final String LOG_TAG = Emojifier.class.getSimpleName();
 
+    private static final float THRESHOLD_SMILING_PROB = 0.7;
+    private static final float THRESHOLD_EYEOPEN_PROB = 0.7;
+    
+    private static boolean mIsSmiling = false;
+    private static boolean mIsRightEyeOpen = false;
+    private static boolean mIsLeftEyeOpen = false;
+    
     /**
      * Method for detecting faces in a bitmap.
      *
@@ -61,8 +68,8 @@ class Emojifier {
                 Face face = faces.valueAt(i);
 
                 // Log the classification probabilities for each face.
-                getClassifications(face);
-                // TODO (6): Change the call to getClassifications to whichEmoji() to log the appropriate emoji for the facial expression.
+                whichEmoji(face);
+                // COMPLETED (6): Change the call to getClassifications to whichEmoji() to log the appropriate emoji for the facial expression.
             }
 
         }
@@ -78,20 +85,78 @@ class Emojifier {
      *
      * @param face The face to get the classification probabilities.
      */
-    private static void getClassifications(Face face){
-        // TODO (2): Change the name of the getClassifications() method to whichEmoji() (also change the log statements)
+    private static void whichEmoji(Face face){
+        // COMPLETED (2): Change the name of the getClassifications() method to whichEmoji() (also change the log statements)
         // Log all the probabilities
         Log.d(LOG_TAG, "getClassifications: smilingProb = " + face.getIsSmilingProbability());
         Log.d(LOG_TAG, "getClassifications: leftEyeOpenProb = "
                 + face.getIsLeftEyeOpenProbability());
         Log.d(LOG_TAG, "getClassifications: rightEyeOpenProb = "
                 + face.getIsRightEyeOpenProbability());
-
-        // TODO (3): Create threshold constants for a person smiling, and and eye being open by taking pictures of yourself and your friends and noting the logs.
-        // TODO (4): Create 3 boolean variables to track the state of the facial expression based on the thresholds you set in the previous step: smiling, left eye closed, right eye closed.
-        // TODO (5): Create an if/else system that selects the appropriate emoji based on the above booleans and log the result.
+        
+        // COMPLETED (3): Create threshold constants for a person smiling, and and eye being open by taking pictures of yourself and your friends and noting the logs.
+        // COMPLETED (4): Create 3 boolean variables to track the state of the facial expression based on the thresholds you set in the previous step: smiling, left eye closed, right eye closed.
+        // COMPLETED (5): Create an if/else system that selects the appropriate emoji based on the above booleans and log the result.
+        mIsSmiling = face.getIsSmilingProbability() >= THRESHOLD_SMILING_PROB ? true : false;
+        mIsRightEyeOpen = face.getIsRightEyeOpenProbability() >= THRESHOLD_EYEOPEN_PROB ? true : false;
+        mIsLeftEyeOpen = face.getIsLeftEyeOpenProbability() >= THRESHOLD_EYEOPEN_PROB ? true : false;
+        
+        if(mIsSmiling) {
+            if(mIsRightEyeOpen) {
+                if(mIsLeftEyeOpen) {
+                    Log.d(LOG_TAG, "Selected emoji is " + Emoji.SMILING);
+                } else {
+                    Log.d(LOG_TAG, "Selected emoji is " + Emoji.RIGHT_WINK);
+                }
+            } else {
+                if(mIsLeftEyeOpen) {
+                    Log.d(LOG_TAG, "Selected emoji is " + Emoji.LEFT_WINK);
+                } else {
+                    Log.d(LOG_TAG, "Selected emoji is " + Emoji.CLOSED_EYE_SMILING);
+                }
+            }
+        } else {
+            if(mIsRightEyeOpen) {
+                if(mIsLeftEyeOpen) {
+                    Log.d(LOG_TAG, "Selected emoji is " + Emoji.FROWNING);
+                } else {
+                    Log.d(LOG_TAG, "Selected emoji is " + Emoji.RIGHT_WINK_FROWNING);
+                }
+            } else {
+                if(mIsLeftEyeOpen) {
+                    Log.d(LOG_TAG, "Selected emoji is " + Emoji.LEFT_WINK_FROWNING);
+                } else {
+                    Log.d(LOG_TAG, "Selected emoji is " + Emoji.CLOSED_EYE_FROWNING);
+                }
+            }
+        }
     }
 
 
-    // TODO (1): Create an enum class called Emoji that contains all the possible emoji you can make (smiling, frowning, left wink, right wink, left wink frowning, right wink frowning, closed eye smiling, close eye frowning).
+    // COMPLETED (1): Create an enum class called Emoji that contains all the possible emoji you can make (smiling, frowning, left wink, right wink, left wink frowning, right wink frowning, closed eye smiling, close eye frowning).
+    class Emoji {
+        public static final int SMILING = 1;
+        public static final int FROWNING = 2;
+        public static final int LEFT_WINK = 3;
+        public static final int RIGHT_WINK = 4;
+        public static final int LEFT_WINK_FROWNING = 5;
+        public static final int RIGHT_WINK_FROWNING = 6;
+        public static final int CLOSED_EYE_SMILING = 7;
+        public static final int CLOSED_EYE_FROWNING = 8;
+        
+        public enum EnumEmoji {
+            SMILING, 
+            FROWNING, 
+            LEFT_WINK, 
+            RIGHT_WINK, 
+            LEFT_WINK_FROWNING, 
+            RIGHT_WINK_FROWNING, 
+            CLOSED_EYE_SMILING, 
+            CLOSED_EYE_FROWNING
+        }
+        
+        public Emoji(EnumEmoji enumEmoji) {
+            
+        }
+    }
 }
